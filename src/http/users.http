@@ -1,0 +1,34 @@
+# baseURL
+@baseURL = http://localhost:3000
+
+###
+# Find All Users
+GET {{ baseURL }}/users
+
+###
+# Find Office By Id
+GET {{ baseURL }}/users/1
+
+###
+# Create Office
+POST {{ baseURL }}/users
+Content-Type: application/json
+
+{
+    "email": "example@email.com",
+    "password": "password"
+}
+
+###
+# Modify Office By Id
+PUT {{ baseURL }}/users/1
+Content-Type: application/json
+
+{
+    "email": "example@email.com",
+    "password": "password"
+}
+
+###
+# Delete Office By Id
+DELETE {{ baseURL }}/users/1
