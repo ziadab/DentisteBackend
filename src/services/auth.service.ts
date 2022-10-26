@@ -1,62 +1,63 @@
 import { hash, compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { SECRET_KEY } from '@config';
-import { CreateOfficeDto } from '@/dtos/offices.dto';
+import { CreateOfficeDto, Login } from '@/dtos/offices.dto';
 import { HttpException } from '@exceptions/HttpException';
-import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
+import { DataStoredInToken } from '@interfaces/auth.interface';
 import { Office } from '@/interfaces/offices.interface';
-import userModel from '@/models/offices.model';
+import officeModel from '@/models/offices.model';
 import { isEmpty } from '@utils/util';
 
 class AuthService {
-  public users = userModel;
+  public offices = officeModel;
 
-  public async signup(userData: CreateOfficeDto): Promise<Office> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async signup(officeData: CreateOfficeDto): Promise<{ office: Office; token: string }> {
+    if (isEmpty(officeData)) throw new HttpException(400, 'officeData is empty');
 
-    const findUser: Office = await this.users.findOne({ email: userData.email });
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+    const findOffice: Office = await this.offices.findOne({ email: officeData.email });
+    if (findOffice) throw new HttpException(409, `This email ${officeData.email} already exists`);
 
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: Office = await this.users.create({ ...userData, password: hashedPassword });
+    const hashedPassword = await hash(officeData.password, 10);
+    const createUserData: Office = await this.offices.create({ ...officeData, password: hashedPassword });
 
-    return createUserData;
+    const tokenData = this.createToken(createUserData);
+
+    return { office: createUserData, token: tokenData };
   }
 
-  public async login(userData: CreateOfficeDto): Promise<{ cookie: string; findUser: Office }> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async login(officeData: Login): Promise<{ cookie: string; token: string }> {
+    if (isEmpty(officeData)) throw new HttpException(400, 'officeData is empty');
 
-    const findUser: Office = await this.users.findOne({ email: userData.email });
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findOffice: Office = await this.offices.findOne({ email: officeData.email });
+    if (!findOffice) throw new HttpException(409, `This email ${officeData.email} was not found`);
 
-    const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
+    const isPasswordMatching: boolean = await compare(officeData.password, findOffice.password);
     if (!isPasswordMatching) throw new HttpException(409, 'Password is not matching');
 
-    const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
+    const token = this.createToken(findOffice);
+    const cookie = this.createCookie(token);
 
-    return { cookie, findUser };
+    return { cookie, token };
   }
 
-  public async logout(userData: Office): Promise<Office> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async logout(officeData: Office): Promise<Office> {
+    if (isEmpty(officeData)) throw new HttpException(400, 'officeData is empty');
 
-    const findUser: Office = await this.users.findOne({ email: userData.email, password: userData.password });
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findOffice: Office = await this.offices.findOne({ email: officeData.email, password: officeData.password });
+    if (!findOffice) throw new HttpException(409, `This email ${officeData.email} was not found`);
 
-    return findUser;
+    return findOffice;
   }
 
-  public createToken(user: Office): TokenData {
-    const dataStoredInToken: DataStoredInToken = { _id: user._id };
+  public createToken(office: Office): string {
+    const dataStoredInToken: DataStoredInToken = { _id: office._id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 60 * 60;
 
-    return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
+    return sign({ ...dataStoredInToken, time: new Date() }, secretKey);
   }
 
-  public createCookie(tokenData: TokenData): string {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
+  public createCookie(tokenData: string): string {
+    return `Authorization=${tokenData}`;
   }
 }
 

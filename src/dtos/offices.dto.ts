@@ -10,3 +10,11 @@ export class CreateOfficeDto {
   @IsString()
   public officeName: string;
 }
+
+export class Login {
+  @IsEmail()
+  public email: string;
+
+  @IsString()
+  public password: string;
+}

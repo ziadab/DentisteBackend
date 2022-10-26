@@ -7,9 +7,8 @@ export interface DataStoredInToken {
 
 export interface TokenData {
   token: string;
-  expiresIn: number;
 }
 
-export interface RequestWithUser extends Request {
-  user: Office;
+export interface RequestWithOffice extends Request {
+  office: Office;
 }

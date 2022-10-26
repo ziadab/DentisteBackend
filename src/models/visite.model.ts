@@ -16,21 +16,24 @@ const theethSchema: Schema = new Schema({
   },
 });
 
-const visitesSchema: Schema = new Schema({
-  pationId: {
-    type: String,
-    required: true,
+const visitesSchema: Schema = new Schema(
+  {
+    pationId: {
+      type: String,
+      required: true,
+    },
+    observation: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: Date,
+      default: Date.now,
+    },
+    theeths: [theethSchema],
   },
-  observation: {
-    type: String,
-    required: true,
-  },
-  time: {
-    type: Date,
-    default: Date.now,
-  },
-  theeths: [theethSchema],
-});
+  { timestamps: true },
+);
 
 const visitesModel = model<Visites & Document>('Visites', visitesSchema);
 

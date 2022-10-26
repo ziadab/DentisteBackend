@@ -1,24 +1,27 @@
 import { model, Schema, Document } from 'mongoose';
 import { Ordonance } from '@/interfaces/ordonances.interface';
 
-const drugsSchema: Schema = new Schema({
-  when: {
-    type: Number,
-    required: true,
+const drugsSchema: Schema = new Schema(
+  {
+    when: {
+      type: Number,
+      required: true,
+    },
+    drugName: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    potion: {
+      type: String,
+      required: true,
+    },
   },
-  drugName: {
-    type: String,
-    required: true,
-  },
-  time: {
-    type: String,
-    required: true,
-  },
-  potion: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true },
+);
 
 const ordonanceSchema: Schema = new Schema({
   pationId: {

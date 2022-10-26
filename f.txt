@@ -1,0 +1,20 @@
+
+GET http://localhost:3000/pations HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzUwNzU1MDcwYjdlNjJhMmY1MGIzMDYiLCJ0aW1lIjoiMjAyMi0xMC0xOVQyMjowODoxNi4xOTRaIiwiaWF0IjoxNjY2MjE3Mjk2fQ.98HUGl0WncfPCArPvf2-PiE8Lk-7z85irXdBU1muhew
+
+{
+    "firstName": "test3",
+    "lastName": "test3",
+    "cin": "uwu3",
+    "age": 18,
+    "phone": "+212636999999",
+    "profession": "test",
+    "address": "test",
+    "cardiovasculaires": "yes",
+    "hematologiques": "yes",
+    "endocriniennes": "yes",
+    "allergies": "yes",
+    "nerveux": "yes",
+    "autre": ""
+}
